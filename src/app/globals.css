@@ -15,14 +15,9 @@ body {
   margin: 0;
 }
 .fix-height{
+ min-height: calc(100vh - 150px);
+}
+.overflow-height{
   height: calc(100vh - 150px);
-}
-.fixed-bottom{
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-}
+ }
+

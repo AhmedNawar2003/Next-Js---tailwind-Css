@@ -10,9 +10,9 @@ const ArticlePage = async () => {
   return (
     <section className="container m-auto px-5">
       <div className="flex items-center justify-center flex-wrap gap-7">
-      {articles.map((item) => (
-        <ArticleItem article={item} key={item.id}/>
-      ))}
+        {articles.map((item) => (
+          <ArticleItem article={item} key={item.id} />
+        ))}
       </div>
     </section>
   );
