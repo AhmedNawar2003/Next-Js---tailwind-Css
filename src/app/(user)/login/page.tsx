@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import LoginForm from "./LoginForm";
 
 const LoginPage = () => {
@@ -12,3 +13,7 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+export const metadata: Metadata = {
+  title: "Login Page",
+  description: "Login Page",
+};

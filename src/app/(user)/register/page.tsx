@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import RegisterForm from "./RegisterForm";
 
 const RegisterPage = () => {
@@ -12,3 +13,7 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
+export const metadata: Metadata = {
+  title: "Register page",
+  description: "Register page",
+};

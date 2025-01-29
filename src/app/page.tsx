@@ -1,5 +1,6 @@
 import Hero from "@/Components/Home/Hero";
 import WebHostingPlan from "@/Components/Home/WebHostingPlan";
+import { Metadata } from "next";
 const HomePge = () => {
   return (
     <section>
@@ -17,3 +18,7 @@ const HomePge = () => {
 };
 
 export default HomePge;
+export const metadata: Metadata = {
+  title: "Home page",
+  description: "This is the homepage",
+};
