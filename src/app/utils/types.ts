@@ -1,6 +1,11 @@
 export type Article = {
     id: number;
-    userId: string;
+    userId: number;
     title: string;
     body: string;
+  };
+  export type JWTPayload = {
+    id: number;
+    isAdmin: boolean;
+    username: string;
   };
