@@ -19,3 +19,15 @@ export interface CreateArticleDto {
       email: string;
       password: string;
   }
+  
+  export interface UpdateUserDto{
+    username?: string;
+    email?: string;
+    password?: string;
+}
+
+//CommentDto
+export interface CreateCommentDto{
+    text: string;
+    articleId: number;
+}

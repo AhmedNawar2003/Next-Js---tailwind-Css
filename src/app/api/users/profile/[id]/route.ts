@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/utils/db";
 import { verifyToken } from "@/app/utils/verifyToken";
-
+import { UpdateUserDto } from "@/app/utils/dtos";
+import bcrypt from "bcryptjs";
 interface Props {
   params: { id: string };
 }
@@ -20,7 +22,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
-     
+
     const userFromToken = verifyToken(request);
     if (userFromToken !== null && userFromToken.id === user.id) {
       await prisma.user.delete({ where: { id: parseInt(params.id) } });
@@ -33,7 +35,99 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       { message: "You are not authorized to delete this profile , forbidden" },
       { status: 403 } //Forbidden
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return NextResponse.json(
+      { message: "internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * @method GET
+ * @route ~/api/users/:id
+ * @desc   Get Profile By Id
+ * @access private (only user can Get his account)
+ */
+export async function GET(request: NextRequest, { params }: Props) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(params.id) },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        isAdmin: true,
+        createAt: true,
+      },
+    });
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+    const userFromToken = verifyToken(request);
+    if (userFromToken === null || userFromToken.id !== user.id) {
+      return NextResponse.json(
+        {
+          message: "You are not authorized to view this profile, Access denied",
+        },
+        { status: 403 } //Forbidden
+      );
+    }
+    return NextResponse.json(user, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * @method PUT
+ * @route ~/api/users/:id
+ * @desc   Update Profile
+ * @access private (only user can update his account)
+ */
+
+export async function PUT(request: NextRequest, { params }: Props) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(params.id) },
+    });
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+    const userFromToken = verifyToken(request);
+    if (userFromToken === null || userFromToken.id !== user.id) {
+      return NextResponse.json(
+        {
+          message:
+            "You are not authorized to update this profile, Access denied",
+        },
+        { status: 403 } //Forbidden
+      );
+    }
+    const body = (await request.json()) as UpdateUserDto;
+    if (body.password) {
+      if (body.password.length < 6) {
+        return NextResponse.json(
+          { message: "Password must be at least 6 characters long" },
+          { status: 400 }
+        );
+      }
+      const salt = await bcrypt.genSalt(10);
+      body.password = await bcrypt.hash(body.password, salt);
+    }
+    const updatedUser = await prisma.user.update({
+      where: { id: parseInt(params.id) },
+      data: {
+        username: body.username,
+        email: body.email,
+        password: body.password,
+      },
+    });
+    const { password, ...other } = updatedUser;
+    return NextResponse.json({ ...other }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "internal server error" },

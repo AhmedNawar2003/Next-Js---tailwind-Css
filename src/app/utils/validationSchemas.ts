@@ -10,8 +10,8 @@ export const CreateArticleSchema = z.object({
     .max(200, { message: "Title should be less than 200 characters" }),
   description: z.string().min(10),
 });
-//Register  Schema
 
+//Register  Schema
 export const RegisterSchema = z.object({
   username: z
     .string({
@@ -41,3 +41,11 @@ export const LoginSchema = z.object({
     invalid_type_error: "Password must be a string",
   }),
 });
+
+// Create Comment Schema
+
+export const CreateCommentSchema = z.object({
+  text: z.string().min(2).max(500),
+  articleId: z.number(),
+});
+
