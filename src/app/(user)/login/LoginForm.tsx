@@ -10,6 +10,7 @@ const LoginForm = () => {
     e.preventDefault();
     if (email === "") return toast.error("Email is required");
     if (password === "") return toast.error("Password is required");
+    
     console.log({ email, password });
     router.replace("/");
   };

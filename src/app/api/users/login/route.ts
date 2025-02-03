@@ -3,8 +3,7 @@ import { LoginUserDto } from "@/app/utils/dtos";
 import { LoginSchema } from "@/app/utils/validationSchemas";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { generateJWT } from "./../../../utils/generateToken";
-import { JWTPayload } from "@/app/utils/types";
+import { setCookie } from "./../../../utils/generateToken";
 /**
  * @method POST
  * @route ~/api/user/login
@@ -37,15 +36,17 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const jwtPayload: JWTPayload = {
+    const cookie = setCookie({
       id: user.id,
       isAdmin: user.isAdmin,
       username: user.username,
-    };
-    const token = generateJWT(jwtPayload);
+    });
     return NextResponse.json(
-      { message: "Authenticated", token },
-      { status: 200 }
+      { message: "Authenticated" },
+      {
+        status: 200,
+        headers: { "Set-Cookie": cookie },
+      }
     );
   } catch (error) {
     return NextResponse.json(

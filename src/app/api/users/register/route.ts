@@ -3,8 +3,7 @@ import { RegisterUserDto } from "@/app/utils/dtos";
 import { RegisterSchema } from "@/app/utils/validationSchemas";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { generateJWT } from "./../../../utils/generateToken";
-import { JWTPayload } from "@/app/utils/types";
+import { setCookie } from "./../../../utils/generateToken";
 /**
 /**
  * @method POST
@@ -38,19 +37,22 @@ export async function POST(request: NextRequest) {
         email: body.email,
         password: hashedPassword,
       },
-      select:{
-           username:true,
-           id:true,
-           isAdmin:true,
-      }
+      select: {
+        username: true,
+        id: true,
+        isAdmin: true,
+      },
     });
-     const jwtPayload: JWTPayload = {
+
+    const cookie = setCookie({
       id: newUser.id,
       username: newUser.username,
       isAdmin: newUser.isAdmin,
-    };
-    const token = generateJWT(jwtPayload);
-    return NextResponse.json({...newUser,token}, { status: 201 });
+    });
+    return NextResponse.json(
+      { ...newUser, message: "Registered & Authenticated" },
+      { status: 201, headers: { "Set-Cookie": cookie } }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "internal server error" },
