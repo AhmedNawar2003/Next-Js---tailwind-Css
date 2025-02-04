@@ -4,6 +4,7 @@ import prisma from "@/app/utils/db";
 import { verifyToken } from "@/app/utils/verifyToken";
 import { UpdateUserDto } from "@/app/utils/dtos";
 import bcrypt from "bcryptjs";
+import { UpdateUserSchema } from "@/app/utils/validationSchemas";
 interface Props {
   params: { id: string };
 }
@@ -18,6 +19,9 @@ export async function DELETE(request: NextRequest, { params }: Props) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: parseInt(params.id) },
+      include: {
+        comment: true,
+      },
     });
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -25,7 +29,11 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
     const userFromToken = verifyToken(request);
     if (userFromToken !== null && userFromToken.id === user.id) {
+      // delete the user's profile
       await prisma.user.delete({ where: { id: parseInt(params.id) } });
+      // delete the comments that belong to this article
+      const commentIds = user?.comment.map((comment) => comment.id);
+      await prisma.comment.deleteMany({ where: { id: { in: commentIds } } });
       return NextResponse.json(
         { message: "Your Profile (account) has been deleted" },
         { status: 200 }
@@ -108,13 +116,14 @@ export async function PUT(request: NextRequest, { params }: Props) {
       );
     }
     const body = (await request.json()) as UpdateUserDto;
+    const validation = UpdateUserSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { message: validation.error.errors[0].message },
+        { status: 400 }
+      );
+    }
     if (body.password) {
-      if (body.password.length < 6) {
-        return NextResponse.json(
-          { message: "Password must be at least 6 characters long" },
-          { status: 400 }
-        );
-      }
       const salt = await bcrypt.genSalt(10);
       body.password = await bcrypt.hash(body.password, salt);
     }

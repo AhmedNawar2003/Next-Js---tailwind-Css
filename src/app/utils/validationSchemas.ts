@@ -20,22 +20,32 @@ export const RegisterSchema = z.object({
     })
     .min(2, { message: "username should be at least 2 characters" })
     .max(100, { message: "username should be less than 100 characters" }),
-  email: z.string({
-    required_error: "Email is required",
-    invalid_type_error: "Email must be a string",
-  }).min(3,{message:"Email should be at least 2 characters"}).max(200,{message:"Email should be  less than 200 characters"}).email(),
-  password: z.string({
-    required_error: "Password is required",
-    invalid_type_error: "Password must be a string",
-  }).min(6,{message:"password should be at least 6"}),
+  email: z
+    .string({
+      required_error: "Email is required",
+      invalid_type_error: "Email must be a string",
+    })
+    .min(3, { message: "Email should be at least 2 characters" })
+    .max(200, { message: "Email should be  less than 200 characters" })
+    .email(),
+  password: z
+    .string({
+      required_error: "Password is required",
+      invalid_type_error: "Password must be a string",
+    })
+    .min(6, { message: "password should be at least 6" }),
 });
 
 //Login Schema
 export const LoginSchema = z.object({
-  email: z.string({
-    required_error: "Email is required",
-    invalid_type_error: "Email must be a string",
-  }).min(3,{message:"Email should be at least 2 characters"}).max(200,{message:"Email should be  less than 200 characters"}).email(),
+  email: z
+    .string({
+      required_error: "Email is required",
+      invalid_type_error: "Email must be a string",
+    })
+    .min(3, { message: "Email should be at least 2 characters" })
+    .max(200, { message: "Email should be  less than 200 characters" })
+    .email(),
   password: z.string({
     required_error: "Password is required",
     invalid_type_error: "Password must be a string",
@@ -49,3 +59,9 @@ export const CreateCommentSchema = z.object({
   articleId: z.number(),
 });
 
+//Update User Profile Schema
+export const UpdateUserSchema = z.object({
+  username: z.string().min(2).max(100).optional(),
+  email: z.string().min(3).max(200).email().optional(),
+  password: z.string().min(6).optional(),
+});

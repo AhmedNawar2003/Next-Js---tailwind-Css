@@ -1,19 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CreateArticleSchema } from "@/app/utils/validationSchemas";
 import { NextRequest, NextResponse } from "next/server";
 import { CreateArticleDto } from "./../../utils/dtos";
 import { Article } from "@prisma/client";
 import prisma from "@/app/utils/db";
+import { ARTICLE_PER_PAGE } from "@/app/utils/constants";
+import { verifyToken } from "@/app/utils/verifyToken";
 /**
  * @method GET
  * @route ~/api/articles
- * @desc  Get All Articles
+ * @desc  Get Articles By page number
  * @access public
  */
 export async function GET(request: NextRequest) {
+  const pageNumber = request.nextUrl.searchParams.get("pageNumber") || "1";
   try {
-    const articles = await prisma.article.findMany();
+    const articles = await prisma.article.findMany({
+      skip: ARTICLE_PER_PAGE * (parseInt(pageNumber) - 1),
+      take: ARTICLE_PER_PAGE,
+    });
     return NextResponse.json(articles, { status: 200 });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return NextResponse.json(
       { message: "internal server error" },
@@ -26,10 +32,17 @@ export async function GET(request: NextRequest) {
  * @method POST
  * @route ~/api/articles
  * @desc  Create a New Article
- * @access public
+ * @access private (only admin can create article)
  */
-export async function POST(request: NextResponse) {
+export async function POST(request: NextRequest) {
   try {
+    const user = verifyToken(request);
+    if (!user || !user.isAdmin) {
+      return NextResponse.json(
+        { message: "unauthorized, allowed for admin only" },
+        { status: 403 }
+      );
+    }
     const body = (await request.json()) as CreateArticleDto;
     const validation = CreateArticleSchema.safeParse(body);
     if (!validation.success) {
@@ -45,7 +58,6 @@ export async function POST(request: NextResponse) {
       },
     });
     return NextResponse.json(newArticle, { status: 201 });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return NextResponse.json(
       { message: "internal server error" },
