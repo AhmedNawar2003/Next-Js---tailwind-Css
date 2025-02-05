@@ -1,12 +1,30 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import { DOMAIN } from "@/app/utils/constants";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
-const AddCommentForm = () => {
+
+interface AddCommentFormProps {
+  articleId: number;
+}
+
+const AddCommentForm = ({ articleId }: AddCommentFormProps) => {
+  const router = useRouter();
   const [text, setText] = useState("");
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (text === "") return toast.error("Please Write Something");
-    console.log({ text });
+    try {
+      await axios.post(`${DOMAIN}/api/comments`, { text, articleId });
+      router.refresh();
+      setText("");
+    } catch (error: any) {
+      toast.error(error?.response?.data.message);
+      console.log(error);
+    }
   };
   return (
     <div>
@@ -18,10 +36,12 @@ const AddCommentForm = () => {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-         <button className="rounded-lg text-xl w-min bg-green-700 hover:bg-green-900 text-white my-2 p-3" type="submit">
+        <button
+          className="rounded-lg text-xl w-min bg-green-700 hover:bg-green-900 text-white my-2 p-3"
+          type="submit"
+        >
           Comment
         </button>
-       
       </form>
     </div>
   );

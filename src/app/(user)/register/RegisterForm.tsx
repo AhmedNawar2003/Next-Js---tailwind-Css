@@ -1,16 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { DOMAIN } from "@/app/utils/constants";
+import ButtonSpinner from "@/Components/ButtonSpinner";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 const RegisterForm = () => {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     if (username === "") return toast.error("Username is required");
     if (email === "") return toast.error("Email is required");
     if (password === "") return toast.error("Password is required");
-    console.log({username, email, password });
+    try {
+      setLoading(true);
+      await axios.post(`${DOMAIN}/api/users/register`, { email, password,username});
+      router.replace("/");
+      setLoading(false)
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error?.response?.data.message);
+      console.log(error);
+      setLoading(false);
+    }
   };
   return (
     <div>
@@ -39,8 +56,9 @@ const RegisterForm = () => {
         <button
           className="w-full px-5 py-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800 transition-all"
           type="submit"
+          disabled={loading}
         >
-          Register
+          {loading? <ButtonSpinner /> : "Register"}
         </button>
       </form>
     </div>
