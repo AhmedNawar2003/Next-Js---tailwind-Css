@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         headers: { "Set-Cookie": cookie },
       }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "internal server error" },
       { status: 500 }

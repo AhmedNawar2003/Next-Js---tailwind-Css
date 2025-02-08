@@ -1,7 +1,4 @@
-/* eslint-disable prefer-const */
 import Link from "next/link";
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
 interface PaginationProps {
   pages: number;
   pageNumber: number;

@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       { ...newUser, message: "Registered & Authenticated" },
       { status: 201, headers: { "Set-Cookie": cookie } }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "internal server error" },
       { status: 500 }

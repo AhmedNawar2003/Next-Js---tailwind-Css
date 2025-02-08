@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { DOMAIN } from "@/app/utils/constants";
 import { SingleArticle } from "@/app/utils/types";
 import { Article } from "@prisma/client";

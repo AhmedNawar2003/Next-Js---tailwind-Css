@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { DOMAIN } from "@/app/utils/constants";
 import axios from "axios";
@@ -6,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState, Dispatch, SetStateAction } from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { toast } from "react-toastify";
-import { type } from "./../../app/utils/types";
-
 interface UpdateCommentModelProps {
   setOpen: Dispatch<SetStateAction<boolean>>;
   text: string;

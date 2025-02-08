@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import ArticleItem from "@/Components/article/ArticleItem";
 import { Article } from "@prisma/client";
 import { Metadata } from "next";

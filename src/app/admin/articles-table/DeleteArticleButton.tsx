@@ -18,6 +18,7 @@ const DeleteArticleButton = ({ articleId }: DeleteArticleButtonProps) => {
       router.refresh();
       toast.success("Article deleted successfully");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.response?.data.message);
       console.log(error);
