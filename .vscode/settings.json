@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["autoincrement", "Youssef", "إنشاء", "حساب"]
+  "cSpell.words": ["autoincrement", "Youssef", "إنشاء", "حساب"],
+  "bitoAI.codeCompletion.enableAutoCompletion": false
 }

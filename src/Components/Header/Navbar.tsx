@@ -6,7 +6,11 @@ import { GrTechnology } from "react-icons/gr";
 import { AiOutlineMenu } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 // import { GrTechnology } from 'react-icons/gr';
-const Navbar = () => {
+
+interface NavbarProps {
+  isAdmin: boolean;
+}
+const Navbar = ({ isAdmin }: NavbarProps) => {
   const [toggle, setToggle] = useState(false);
   return (
     <div>
@@ -52,13 +56,15 @@ const Navbar = () => {
             >
               About
             </Link>
-            <Link
-              onClick={() => setToggle(false)}
-              className={styles.navLink}
-              href="/admin"
-            >
-              Admin Dashboard
-            </Link>
+            {isAdmin && (
+              <Link
+                onClick={() => setToggle(false)}
+                className={styles.navLink}
+                href="/admin"
+              >
+                Admin Dashboard
+              </Link>
+            )}
           </ul>
         </div>
       </nav>

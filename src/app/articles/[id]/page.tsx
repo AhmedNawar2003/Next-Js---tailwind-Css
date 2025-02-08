@@ -4,6 +4,7 @@ import CommentItem from "@/Components/comments/CommentItem";
 import { SingleArticle } from "@/app/utils/types";
 import { cookies } from "next/headers";
 import { verifyTokenForPage } from "@/app/utils/verifyToken";
+import { Metadata } from "next";
 
 interface SingleArticlePageProps {
   params: { id: string };
@@ -44,3 +45,8 @@ const SingleArticlePage = async ({ params }: SingleArticlePageProps) => {
 };
 
 export default SingleArticlePage;
+
+export const metadata: Metadata = {
+  title: "Article page",
+  description: "This is an article page",
+};
