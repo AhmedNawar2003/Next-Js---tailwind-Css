@@ -27,9 +27,13 @@ const UpdateCommentModel = ({
       router.refresh();
       setUpdatedText("");
       setOpen(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data.message);
-      console.log(error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "An error occurred");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      console.error(error);
     }
   };
   return (

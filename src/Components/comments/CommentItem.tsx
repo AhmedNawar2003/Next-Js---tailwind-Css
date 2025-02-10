@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { CommentWithUser } from "@/app/utils/types";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -22,9 +21,13 @@ const CommentItem = ({ comment, userId }: CommentItemProps) => {
         await axios.delete(`${DOMAIN}/api/comments/${comment.id}`);
         router.refresh();
       }
-    } catch (error: any) {
-      toast.error(error?.response?.data.message);
-      console.log(error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "An error occurred");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      console.error(error);
     }
   };
   return (

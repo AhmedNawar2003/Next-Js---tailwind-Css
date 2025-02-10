@@ -13,15 +13,18 @@ const DeleteArticleButton = ({ articleId }: DeleteArticleButtonProps) => {
   const router = useRouter();
   const deleteArticleHandler = async () => {
     try {
-      if (confirm("Are you sure you want to delete this Article")){
+      if (confirm("Are you sure you want to delete this Article")) {
         await axios.delete(`${DOMAIN}/api/articles/${articleId}`);
-      router.refresh();
-      toast.success("Article deleted successfully");
+        router.refresh();
+        toast.success("Article deleted successfully");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      toast.error(error?.response?.data.message);
-      console.log(error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "An error occurred");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      console.error(error);
     }
   };
   return (

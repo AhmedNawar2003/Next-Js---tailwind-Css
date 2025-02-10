@@ -19,9 +19,13 @@ const AddCommentForm = ({ articleId }: AddCommentFormProps) => {
       await axios.post(`${DOMAIN}/api/comments`, { text, articleId });
       router.refresh();
       setText("");
-    } catch (error: any) {
-      toast.error(error?.response?.data.message);
-      console.log(error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "An error occurred");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      console.error(error);
     }
   };
   return (

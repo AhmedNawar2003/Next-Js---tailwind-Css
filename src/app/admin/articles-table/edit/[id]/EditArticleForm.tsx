@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import axios from "axios";
 import { useState } from "react";
@@ -22,9 +21,13 @@ const EditArticleForm = ({ article }:EditArticleFormProps) => {
       await axios.put(`${DOMAIN}/api/articles/${article.id}`, { title, description });
       toast.success("Article Updated successfully");
       router.refresh();
-    } catch (error: any) {
-      toast.error(error?.response?.data.message);
-      console.log(error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "An error occurred");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      console.error(error);
     }
   };
   return (
