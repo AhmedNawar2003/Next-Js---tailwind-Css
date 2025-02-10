@@ -5,22 +5,22 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import EditArticleForm from "./EditArticleForm";
 
-interface EditArticlePageProps {
-  params: { id: string }; // Ensure ID is a string
-}
 
-const EditArticlePage = async ({ params }: EditArticlePageProps) => {
-  const cookieStore = cookies();
-  const token = (await cookieStore).get("jwtToken")?.value;
 
-  // Redirect if token is missing
+const EditArticlePage = async ({ params }: { params: { id: string } }) => {
+  // Ensure the parameter is correctly extracted
+  if (!params?.id) {
+    redirect("/");
+  }
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get("jwtToken")?.value;
+
   if (!token) {
     redirect("/");
   }
 
   const payload = verifyTokenForPage(token);
-
-  // Redirect if the user is not an admin
   if (!payload?.isAdmin) {
     redirect("/");
   }
@@ -28,7 +28,6 @@ const EditArticlePage = async ({ params }: EditArticlePageProps) => {
   try {
     const article: Article | null = await getSingleArticle(params.id);
 
-    // Redirect if article is not found
     if (!article) {
       redirect("/not-found");
     }
