@@ -1,5 +1,5 @@
 "use client";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { DOMAIN } from "../../../../utils/constants";
@@ -7,22 +7,28 @@ import { useRouter } from "next/navigation";
 import { Article } from "@prisma/client";
 
 interface EditArticleFormProps {
-  article: Article;
+  article: Article | null;  // Ensure article can be null for safety
 }
-const EditArticleForm = ({ article }:EditArticleFormProps) => {
+
+const EditArticleForm = ({ article }: EditArticleFormProps) => {
   const router = useRouter();
-  const [title, setTitle] = useState(article.title);
-  const [description, setDescription] = useState(article.description);
+
+  // Ensure default values in case article is null/undefined
+  const [title, setTitle] = useState(article?.title ?? "");
+  const [description, setDescription] = useState(article?.description ?? "");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title === "") return toast.error("Title is required");
-    if (description === "") return toast.error("Description is required");
+
+    if (!title.trim()) return toast.error("Title is required");
+    if (!description.trim()) return toast.error("Description is required");
+
     try {
-      await axios.put(`${DOMAIN}/api/articles/${article.id}`, { title, description });
-      toast.success("Article Updated successfully");
+      await axios.put(`${DOMAIN}/api/articles/${article?.id}`, { title, description });
+      toast.success("Article updated successfully");
       router.refresh();
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
+      if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "An error occurred");
       } else {
         toast.error("An unexpected error occurred");
@@ -30,6 +36,11 @@ const EditArticleForm = ({ article }:EditArticleFormProps) => {
       console.error(error);
     }
   };
+
+  if (!article) {
+    return <p className="text-red-500">Article not found or loading...</p>;
+  }
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
